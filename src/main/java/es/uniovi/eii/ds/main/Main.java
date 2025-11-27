@@ -1,14 +1,28 @@
 package es.uniovi.eii.ds.main;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UncheckedIOException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+import es.uniovi.eii.ds.editors.Delete;
+import es.uniovi.eii.ds.editors.EditAction;
+import es.uniovi.eii.ds.editors.Insert;
+import es.uniovi.eii.ds.editors.Macro;
+import es.uniovi.eii.ds.editors.Replace;
 
 public class Main {
 
     BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	
 	// Represents the document of the editor.
-	StringBuilder text = new StringBuilder();
+	public StringBuilder text = new StringBuilder();
+
+	Map<String, Macro> macros = new HashMap<>();
 
     public static void main(String[] args) {
         new Main().run();
@@ -26,18 +40,17 @@ public class Main {
 			switch (command.name) {
 				case "open" -> open(args);
 				case "insert" -> { 
-					for (String word : args) {
-						text.append(" ").append(word);
-					}
+					EditAction insert = new Insert(args);
+					insert.edit(this);
 				}
 				case "delete" -> {
-					int indexOfLastWord = text.toString().trim().lastIndexOf(" ");
-					if (indexOfLastWord == -1)
-						text = new StringBuilder("");
-					else
-						text.setLength(indexOfLastWord);
+					EditAction delete = new Delete();
+					delete.edit(this);
 				}
-				case "replace" -> replace(args);
+				case "replace" -> {
+					EditAction replace = new Replace(args);
+					replace.edit(this);
+				}
 				case "help" -> showHelp();
 				case "record" -> {
 					// String macroName = args[0];
@@ -94,14 +107,6 @@ public class Main {
 		}
 	}
 
-	private void replace(String[] args) {
-		if (!checkArguments(args, 2, "replace <find> <replace>"))
-			return;
-		String find = args[0];
-		String replace = args[1];
-		text = new StringBuilder(text.toString().replace(find, replace));
-	}
-
 	//$-- Auxiliary methods ---------------------------------------------------
 
 	// YOU DON'T NEED TO UNDERSTAND OR MODIFY THE CODE BELOW THIS LINE
@@ -135,7 +140,7 @@ public class Main {
 		}
     }
 
-    private boolean checkArguments(String[] args, int expected, String syntax) {
+    public boolean checkArguments(String[] args, int expected, String syntax) {
         if (args.length != expected) {
             System.out.println("Invalid number of arguments => " + syntax);
             return false;
