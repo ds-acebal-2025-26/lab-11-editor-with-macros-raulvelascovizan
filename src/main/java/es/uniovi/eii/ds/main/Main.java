@@ -10,10 +10,7 @@ import es.uniovi.eii.ds.editor.commands.Delete;
 import es.uniovi.eii.ds.editor.commands.Execute;
 import es.uniovi.eii.ds.editor.commands.Help;
 import es.uniovi.eii.ds.editor.commands.Insert;
-import es.uniovi.eii.ds.editor.commands.Open;
-import es.uniovi.eii.ds.editor.commands.Record;
 import es.uniovi.eii.ds.editor.commands.Replace;
-import es.uniovi.eii.ds.editor.commands.Stop;
 
 public class Main {
 
@@ -37,7 +34,7 @@ public class Main {
 				case "open" -> {
 					if (!checkArguments(args, 1, "open <file>")) 
 						return;
-					editor.executeCommand(new Open(args));
+					editor.open(args);
 				}
 				case "insert" -> editor.executeCommand(new Insert(args));
 				case "delete" -> editor.executeCommand(new Delete());
@@ -49,10 +46,10 @@ public class Main {
 				case "help" -> editor.executeCommand(new Help());
 				case "record" -> {
 					String macroName = args[0];
-					editor.executeCommand(new Record(macroName));
+					editor.startRecording(macroName);
 				}
 				case "stop" -> { 
-					editor.executeCommand(new Stop());
+					editor.stopRecording();
 				}
 				case "execute" -> {
 					String macroName = args[0];
